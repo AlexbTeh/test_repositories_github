@@ -1,0 +1,17 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = "weather"
+include ':app'
+include ':common'
+include ':domain'
+include ':data'
+include ':di'
+include ':designsystem'
+include ':repositories'
+include ':profile'

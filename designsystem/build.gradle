@@ -1,0 +1,40 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.done.designsystem'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 21
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "$jvm_extension"
+    }
+
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "$kotlin_compiler_extension"
+    }
+}
+
+dependencies {
+
+    implementation androidx_appcompat
+    implementation kotlinx_coroutines_android
+    implementation androidx_core_ktx
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation "androidx.compose.material3:material3:1.2.0"
+}

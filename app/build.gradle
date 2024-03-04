@@ -1,0 +1,80 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'dagger.hilt.android.plugin'
+    id 'kotlin-kapt'
+}
+
+android {
+    namespace 'com.done.weather'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.done.weather"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "$jvm_extension"
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "$kotlin_compiler_extension"
+    }
+
+    kapt {
+        correctErrorTypes true
+    }
+}
+
+dependencies {
+    implementation project(":common")
+    implementation project(":domain")
+    implementation project(":data")
+    implementation project(":di")
+    implementation project(":designsystem")
+    implementation project(":repositories")
+    implementation project(":profile")
+    implementation androidx_appcompat
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation "androidx.compose.material3:material3:1.2.0"
+    implementation compose_activity
+    implementation compose_navigation
+    implementation androidx_annotation
+    implementation kotlin_stdlib_jdk_8
+    implementation java_multidex_application
+    implementation kotlinx_coroutines_android
+    implementation androidx_lifecycle_runtime
+    implementation androidx_core_ktx
+    implementation dagger_lib
+    kapt dagger_compiler
+
+    android {
+        testOptions {
+            // Need android resources for tests
+            unitTests.includeAndroidResources = true
+            // Disabling animations allows faster Espresso tests
+            animationsDisabled = false
+        }
+    }
+}
