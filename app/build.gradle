@@ -1,25 +1,22 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'dagger.hilt.android.plugin'
     id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
     namespace 'com.done.weather'
-    compileSdk 34
+    compileSdk rootProject.ext.android_compile_sdk_version
 
     defaultConfig {
         applicationId "com.done.weather"
-        minSdk 24
-        targetSdk 34
+        minSdk rootProject.ext.android_min_sdk_version
+        targetSdk rootProject.ext.android_target_sdk_version
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary true
-        }
+        vectorDrawables { useSupportLibrary true }
     }
 
     buildTypes {
@@ -27,27 +24,34 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "$jvm_extension"
-    }
-    buildFeatures {
-        compose true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "$kotlin_compiler_extension"
+        debug {
+            minifyEnabled false
+        }
     }
 
-    kapt {
-        correctErrorTypes true
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = rootProject.ext.jvm_extension
+    }
+
+    buildFeatures { compose true }
+    composeOptions { kotlinCompilerExtensionVersion = rootProject.ext.kotlin_compiler_extension }
+
+    packaging { resources { excludes += ["/META-INF/{AL2.0,LGPL2.1}"] } }
+
+    kapt { correctErrorTypes true }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+        animationsDisabled = false
     }
 }
 
 dependencies {
+    // Модули
     implementation project(":common")
     implementation project(":domain")
     implementation project(":data")
@@ -55,26 +59,46 @@ dependencies {
     implementation project(":designsystem")
     implementation project(":repositories")
     implementation project(":profile")
-    implementation androidx_appcompat
-    implementation 'com.google.android.material:material:1.11.0'
-    implementation "androidx.compose.material3:material3:1.2.0"
-    implementation compose_activity
-    implementation compose_navigation
-    implementation androidx_annotation
-    implementation kotlin_stdlib_jdk_8
-    implementation java_multidex_application
-    implementation kotlinx_coroutines_android
-    implementation androidx_lifecycle_runtime
-    implementation androidx_core_ktx
-    implementation dagger_lib
-    kapt dagger_compiler
 
-    android {
-        testOptions {
-            // Need android resources for tests
-            unitTests.includeAndroidResources = true
-            // Disabling animations allows faster Espresso tests
-            animationsDisabled = false
-        }
-    }
+    // AndroidX / Kotlin
+    implementation rootProject.ext.androidx_core_ktx
+    implementation rootProject.ext.androidx_annotation
+    implementation rootProject.ext.androidx_appcompat
+    implementation rootProject.ext.kotlinx_coroutines_android
+    implementation rootProject.ext.androidx_lifecycle_runtime
+    implementation rootProject.ext.androidx_lifecycle_vm
+    implementation rootProject.ext.androidx_lifecycle_livedata
+    implementation rootProject.ext.androidx_lifecycle_compose
+
+    // Compose
+    implementation rootProject.ext.compose_activity
+    implementation rootProject.ext.compose_navigation
+    implementation "androidx.compose.ui:ui:${rootProject.ext.compose_ui_version}"
+    implementation "androidx.compose.ui:ui-tooling-preview:${rootProject.ext.compose_ui_version}" // <— preview
+    implementation rootProject.ext.material3
+    implementation rootProject.ext.compose_constraintlayout
+
+    // Debug tooling (удобные превью и инспектор)
+    debugImplementation "androidx.compose.ui:ui-tooling:${rootProject.ext.compose_ui_version}"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:${rootProject.ext.compose_ui_version}"
+
+    // Material (platform)
+    implementation rootProject.ext.android_material
+
+    // Coil
+    implementation rootProject.ext.compose_kt_coil
+    implementation rootProject.ext.compose_kt_coil_svg
+
+    // Hilt
+    implementation rootProject.ext.hilt_android
+    kapt rootProject.ext.hilt_compiler
+    implementation rootProject.ext.hilt_navigation_compose
+
+    // UI tests (если понадобятся)
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:${rootProject.ext.compose_ui_version}"
+
+    // Unit/UI tests базовые
+    testImplementation rootProject.ext.junit_lib
+    androidTestImplementation rootProject.ext.androidx_test_junit
+    androidTestImplementation rootProject.ext.androidx_test_espresso_core
 }

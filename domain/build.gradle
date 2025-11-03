@@ -1,35 +1,41 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-    id 'dagger.hilt.android.plugin'
     id 'kotlin-kapt'
 }
 
 android {
     namespace 'com.done.domain'
-    compileSdk 34
+    compileSdk rootProject.ext.android_compile_sdk_version
 
     defaultConfig {
-        minSdk 21
-
+        minSdk rootProject.ext.android_min_sdk_version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
 
+    // единый Java/Kotlin target
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "$jvm_extension"
+        jvmTarget = rootProject.ext.jvm_extension // '17'
     }
+
+    kapt { correctErrorTypes true }
 }
 
 dependencies {
+    // Kotlin/AndroidX base
+    implementation rootProject.ext.androidx_core_ktx
+    implementation rootProject.ext.kotlinx_coroutines_android
+    implementation rootProject.ext.androidx_appcompat
 
-    api dagger_lib
-    kapt dagger_compiler
-    implementation androidx_appcompat
-    implementation kotlinx_coroutines_android
-    implementation androidx_core_ktx
+    // Dagger/Hilt (для @Inject и общих аннотаций, но без plugin)
+    implementation rootProject.ext.hilt_android
+    kapt        rootProject.ext.hilt_compiler
+
+    // Тесты
+    testImplementation rootProject.ext.junit_lib
 }

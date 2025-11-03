@@ -2,59 +2,64 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
-    id 'dagger.hilt.android.plugin'
-    id "androidx.navigation.safeargs.kotlin"
+    id 'dagger.hilt.android.plugin' // оставляем, если внутри будут Hilt-модули или @AndroidEntryPoint
 }
 
 android {
-    namespace 'com.done.profile'
-    compileSdk android_compile_sdk_version
+    namespace 'com.done.profile' // можешь переименовать под новую фичу
+    compileSdk rootProject.ext.android_compile_sdk_version
 
     defaultConfig {
-        targetSdk android_target_sdk_version
-
+        minSdk rootProject.ext.android_min_sdk_version
+        targetSdk rootProject.ext.android_target_sdk_version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
 
-    buildFeatures {
-        compose true
-    }
-
+    // единый таргет 17
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "$jvm_extension"
+        jvmTarget = rootProject.ext.jvm_extension // '17'
     }
 
-    buildFeatures {
-        compose true
-    }
+    buildFeatures { compose true }
     composeOptions {
-        kotlinCompilerExtensionVersion = "$kotlin_compiler_extension"
+        kotlinCompilerExtensionVersion = rootProject.ext.kotlin_compiler_extension
     }
+
+    kapt { correctErrorTypes true }
 }
 
 dependencies {
+    // базовые модули
     implementation project(":domain")
     implementation project(":designsystem")
-    implementation androidx_appcompat
-    implementation kotlinx_coroutines_android
-    implementation androidx_core_ktx
-    implementation compose_kt_coil
-    implementation compose_kt_coil_svg
-    implementation compose_navigation
-    implementation hilt_compose_navigation
-    implementation dagger_lib
-    kapt dagger_compiler
-    implementation "androidx.compose.runtime:runtime:$compose_ui_version"
-    implementation "androidx.compose.ui:ui:$compose_ui_version"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
-    implementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
-    implementation "androidx.compose.material:material:1.6.2"
-    implementation compose_constraintlayout
-    implementation "androidx.compose.material3:material3:1.2.0"
-    implementation "androidx.navigation:navigation-compose:2.7.7"
+
+    // AndroidX / Coroutines
+    implementation rootProject.ext.androidx_appcompat
+    implementation rootProject.ext.androidx_core_ktx
+    implementation rootProject.ext.kotlinx_coroutines_android
+
+    // Compose
+    implementation "androidx.compose.runtime:runtime:${rootProject.ext.compose_ui_version}"
+    implementation "androidx.compose.ui:ui:${rootProject.ext.compose_ui_version}"
+    implementation "androidx.compose.ui:ui-tooling-preview:${rootProject.ext.compose_ui_version}"
+    debugImplementation "androidx.compose.ui:ui-tooling:${rootProject.ext.compose_ui_version}"
+    implementation rootProject.ext.material3
+    implementation rootProject.ext.compose_constraintlayout
+
+    // Навигация
+    implementation rootProject.ext.compose_navigation
+    implementation rootProject.ext.hilt_navigation_compose
+
+    // Hilt
+    implementation rootProject.ext.hilt_android
+    kapt        rootProject.ext.hilt_compiler
+
+    // Изображения (если нужно)
+    implementation rootProject.ext.compose_kt_coil
+    implementation rootProject.ext.compose_kt_coil_svg
 }

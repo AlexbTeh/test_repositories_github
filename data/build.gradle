@@ -1,39 +1,73 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-    id 'dagger.hilt.android.plugin'
-    id 'kotlin-kapt'
+    id 'kotlin-kapt'                 // для Room KAPT
 }
 
 android {
     namespace 'com.done.data'
-    compileSdk 34
+    compileSdk rootProject.ext.android_compile_sdk_version
 
     defaultConfig {
-        minSdk 21
-
+        minSdk rootProject.ext.android_min_sdk_version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+
+        // (опционально) Генерация схем Room — удобно для миграций
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += [
+                        "room.schemaLocation"  : "$projectDir/schemas".toString(),
+                        "room.incremental"     : "true",
+                        "room.expandProjection": "true"
+                ]
+            }
+        }
     }
 
+    // ЕДИНЫЙ таргет на 17
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = rootProject.ext.jvm_extension // '17'
     }
 
-    kotlinOptions {
-        jvmTarget = "$jvm_extension"
-    }
+    kapt { correctErrorTypes true }
 }
 
 dependencies {
+    // Доменные модели/интерфейсы
     implementation project(":domain")
-    implementation project(":di")
-    api("com.squareup.retrofit2:retrofit:$retrofit_version")
-    api("com.squareup.retrofit2:converter-gson:$retrofit_version")
-    implementation dagger_lib
-    kapt dagger_compiler
-    implementation androidx_appcompat
-    implementation kotlinx_coroutines_android
-    implementation androidx_core_ktx
+
+    // ❌ НЕ тянем :di (иначе риск циклических зависимостей)
+    // implementation project(":di")
+
+    // ---- AndroidX / Coroutines
+    implementation rootProject.ext.androidx_core_ktx
+    implementation rootProject.ext.kotlinx_coroutines_android
+    implementation rootProject.ext.androidx_appcompat
+
+    // ---- Room (runtime + ktx + compiler)
+    implementation rootProject.ext.room_runtime
+    implementation rootProject.ext.room_ktx
+    kapt        rootProject.ext.room_compiler
+
+    // ---- Retrofit / OkHttp
+    // Обычно в data достаточно implementation (api — если хочешь пробросить наружу интерфейсы Retrofit)
+    implementation rootProject.ext.retrofit_lib
+    implementation rootProject.ext.retrofit_converter_gson
+    implementation rootProject.ext.retrofit_logging_interceptor
+
+    // ---- Hilt
+    // В модуле data плагин Hilt НЕ обязателен; достаточно kapt компилятора, если есть @Inject в классах.
+    implementation rootProject.ext.hilt_android
+    kapt        rootProject.ext.hilt_compiler
+
+    // (опционально) Gson, если используешь напрямую
+    implementation rootProject.ext.gson
+
+    // Тесты при необходимости
+    testImplementation rootProject.ext.junit_lib
 }
