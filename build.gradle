@@ -2,9 +2,9 @@
 buildscript {
     ext {
         // ---- Android config
-        android_compile_sdk_version = 34
-        android_target_sdk_version  = 34
-        android_min_sdk_version     = 24
+        android_compile_sdk_version = 35
+        android_target_sdk_version  = 35
+        android_min_sdk_version     = 26
 
         // ---- Kotlin / Compose
         kotlin_version              = '1.9.24'
@@ -21,7 +21,7 @@ buildscript {
         androidx_lifecycle_livedata = "androidx.lifecycle:lifecycle-livedata-ktx:$androidx_lifecycle_version"
         androidx_lifecycle_compose  = "androidx.lifecycle:lifecycle-runtime-compose:$androidx_lifecycle_version"
 
-        // ---- Compose
+        // ---- Compose (держим 1.6.8, совместим с Kotlin 1.9.24 и AGP 8.6.1)
         compose_ui_version          = "1.6.8"
         compose_activity            = "androidx.activity:activity-compose:1.9.1"
         compose_navigation          = "androidx.navigation:navigation-compose:2.7.7"
@@ -52,7 +52,7 @@ buildscript {
         room_ktx                    = "androidx.room:room-ktx:$room_version"
         room_compiler               = "androidx.room:room-compiler:$room_version"
 
-        // ---- Retrofit / OkHttp (ДОБАВЛЕНО)
+        // ---- Retrofit / OkHttp (на будущее — сейчас офлайн)
         retrofit_version            = "2.11.0"
         retrofit_lib                = "com.squareup.retrofit2:retrofit:$retrofit_version"
         retrofit_converter_gson     = "com.squareup.retrofit2:converter-gson:$retrofit_version"
@@ -66,13 +66,10 @@ buildscript {
         androidx_test_junit         = "androidx.test.ext:junit:1.2.1"
         androidx_test_espresso_core = "androidx.test.espresso:espresso-core:3.6.1"
     }
-    repositories {
-        google(); mavenCentral(); maven { url "https://jitpack.io/" }
-    }
+    repositories { google(); mavenCentral(); maven { url "https://jitpack.io/" } }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.5.2"
+        classpath "com.android.tools.build:gradle:8.6.1"                        // ⬅️ AGP 8.6.1
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        // SafeArgs не подключаем (Navigation-Compose)
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
     }
 }
