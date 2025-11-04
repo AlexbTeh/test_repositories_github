@@ -81,7 +81,8 @@ private fun AppNav() {
 
             ScoreboardRoute(
                 roundId = roundId,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onSubmitted = { navController.popBackStack(ROUTE_CREATE, inclusive = false)}
             )
         }
 

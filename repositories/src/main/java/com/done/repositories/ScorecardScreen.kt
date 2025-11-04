@@ -49,7 +49,8 @@ import com.done.domain.models.Scorecard
 fun ScoreboardRoute(
     roundId: String,
     onBack: () -> Unit,
-    vm: ScoreboardViewModel = hiltViewModel()
+    vm: ScoreboardViewModel = hiltViewModel(),
+    onSubmitted: (() -> Unit)? = null
 ) {
     val card: Scorecard? by vm.flow(roundId).collectAsStateWithLifecycle(initialValue = null)
 
@@ -58,7 +59,10 @@ fun ScoreboardRoute(
             card = it,
             onBack = onBack,
             onInput = { playerId, hole, strokes -> vm.set(roundId, playerId, hole, strokes) },
-            onSubmit = { vm.submit(roundId) }
+            onSubmit = {
+                vm.submit(roundId)
+                (onSubmitted ?: onBack).invoke()
+            }
         )
     }
 }
