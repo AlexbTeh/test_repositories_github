@@ -1,6 +1,5 @@
 package com.done.profile
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,6 +30,17 @@ class CreateRoundViewModel @Inject constructor(
     private val _ui = MutableStateFlow(CreateRoundUi())
     val ui: StateFlow<CreateRoundUi> = _ui.asStateFlow()
 
+    init {
+        _ui.update { cur ->
+            val seeded = cur.copy(
+                tees = cur.tees ?: TeeColour.RED,
+                holes = cur.holes ?: 18,
+                roundType = cur.roundType ?: RoundType.STROKE
+            )
+            seeded.copy(isValid = validate(seeded))
+        }
+    }
+
     fun setTees(v: TeeColour) = update { it.copy(tees = v) }
     fun setHoles(v: Int) = update { it.copy(holes = v) }
     fun setType(v: RoundType) = update { it.copy(roundType = v) }
@@ -45,7 +55,11 @@ class CreateRoundViewModel @Inject constructor(
     }
 
     private fun validate(u: CreateRoundUi): Boolean =
-        u.course.isNotBlank() && u.tees != null && u.holes != null && u.roundType != null && u.players.isNotEmpty()
+        u.course.isNotBlank() &&
+                u.tees != null &&
+                u.holes != null &&
+                u.roundType != null &&
+                u.players.isNotEmpty()
 
     fun createRound(onCreated: (String) -> Unit) {
         val s = _ui.value

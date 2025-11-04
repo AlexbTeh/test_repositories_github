@@ -3,33 +3,50 @@ package com.done.profile
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.done.domain.models.RoundType
 import com.done.domain.models.TeeColour
-
-/* ======================== ПУБЛИЧНЫЙ ЭКРАН ======================== */
 
 @Composable
 fun CreateRoundScreen(
@@ -38,6 +55,8 @@ fun CreateRoundScreen(
     vm: CreateRoundViewModel = hiltViewModel()
 ) {
     val ui by vm.ui.collectAsStateWithLifecycle()
+
+    val canStart = ui.players.isNotEmpty()
 
     Box(
         modifier = Modifier
@@ -60,10 +79,15 @@ fun CreateRoundScreen(
             )
 
             Spacer(Modifier.height(16.dp))
-            Divider(color = Color(0xFF2E2E2E))
+            HorizontalDivider(color = Color(0xFF2E2E2E))
             Spacer(Modifier.height(16.dp))
 
-            Text("General Info", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 22.sp)
+            Text(
+                "General Info",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 22.sp
+            )
             Spacer(Modifier.height(12.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
@@ -77,7 +101,7 @@ fun CreateRoundScreen(
                 Text(
                     buildAnnotatedString {
                         append("Date: ")
-                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("${ui.date}") } // <- строкой
+                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("${ui.date}") }
                     },
                     color = Color.White
                 )
@@ -85,7 +109,10 @@ fun CreateRoundScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 TeesDropdown(
                     label = "Tees",
                     selected = ui.tees ?: TeeColour.RED,
@@ -106,7 +133,9 @@ fun CreateRoundScreen(
                     label = "Round Type",
                     items = types.map { it.name.uppercase() },
                     selected = (ui.roundType ?: types.first()).name.uppercase(),
-                    onSelect = { value -> types.firstOrNull { it.name.equals(value, true) }?.let(vm::setType) },
+                    onSelect = { v ->
+                        types.firstOrNull { it.name.equals(v, true) }?.let(vm::setType)
+                    },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -129,7 +158,7 @@ fun CreateRoundScreen(
                     ui.players.forEach { p ->
                         PlayerChip(
                             name = p.name,
-                            onRemove = { vm.removePlayer(p.id) } // или vm.removePlayer(p)
+                            onRemove = { vm.removePlayer(p.id) } // если метод принимает Player — поменяй на vm.removePlayer(p)
                         )
                     }
                 }
@@ -146,7 +175,7 @@ fun CreateRoundScreen(
             ) {
                 Icon(
                     imageVector = Icons.Filled.AddCircle,
-                    contentDescription = null,
+                    contentDescription = "Add player",
                     tint = Color(0xFF48B000)
                 )
                 Spacer(Modifier.width(8.dp))
@@ -158,7 +187,7 @@ fun CreateRoundScreen(
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 Button(
                     onClick = { vm.createRound(onStartRound) },
-                    enabled = ui.isValid,
+                    enabled = canStart,
                     shape = RoundedCornerShape(28.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF4CAF50),
@@ -171,6 +200,8 @@ fun CreateRoundScreen(
         }
     }
 }
+
+/* ======================== COMPONENTS ======================== */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -190,7 +221,6 @@ private fun TeesDropdown(
             expanded = expanded,
             onExpandedChange = { expanded = it }
         ) {
-            // "Полная" цветная кнопка
             Row(
                 modifier = Modifier
                     .menuAnchor()
@@ -201,16 +231,17 @@ private fun TeesDropdown(
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val darkText = selected in setOf(TeeColour.WHITE, TeeColour.SILVER, TeeColour.GOLD)
                 Text(
                     text = teeLabel(selected),
-                    color = if (selected == TeeColour.WHITE || selected == TeeColour.SILVER || selected == TeeColour.GOLD) Color.Black else Color.White,
+                    color = if (darkText) Color.Black else Color.White,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.weight(1f)
                 )
                 Icon(
                     imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = null,
-                    tint = if (selected == TeeColour.WHITE || selected == TeeColour.SILVER || selected == TeeColour.GOLD) Color.Black else Color.White
+                    contentDescription = "Expand tees",
+                    tint = if (darkText) Color.Black else Color.White
                 )
             }
 
@@ -237,7 +268,6 @@ private fun TeesDropdown(
     }
 }
 
-/** Универсальный белый дропдаун со стрелкой */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SimpleDropdown(
@@ -268,19 +298,24 @@ private fun SimpleDropdown(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(selected, color = Color.Black, modifier = Modifier.weight(1f))
-                Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = null, tint = Color.Black)
+                Icon(
+                    imageVector = Icons.Filled.ArrowDropDown,
+                    contentDescription = "Expand $label",
+                    tint = Color.Black
+                )
             }
 
             ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                 items.forEach { value ->
-                    DropdownMenuItem(text = { Text(value) }, onClick = { expanded = false; onSelect(value) })
+                    DropdownMenuItem(
+                        text = { Text(value) },
+                        onClick = { expanded = false; onSelect(value) })
                 }
             }
         }
     }
 }
 
-/** Чип игрока */
 @Composable
 private fun PlayerChip(
     name: String,
@@ -295,93 +330,35 @@ private fun PlayerChip(
     ) {
         Text(name, color = Color.Black)
         Spacer(Modifier.width(10.dp))
-        Text("X", color = Color(0xFF14B800), fontWeight = FontWeight.Bold, modifier = Modifier.clickable { onRemove() })
-    }
-}
-
-/* ======================== FLOW ROW (Fixed) ======================== */
-
-@Composable
-private fun FlowRow(
-    horizontalGap: Dp,
-    verticalGap: Dp,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
-) {
-    Layout(content = content, modifier = modifier) { measurables, constraints ->
-        val hGap = horizontalGap.roundToPx()
-        val vGap = verticalGap.roundToPx()
-        val maxWidth = constraints.maxWidth
-
-        val placeables: List<Placeable> = measurables.map { it.measure(constraints) }
-
-        val rows = mutableListOf<List<Placeable>>()
-        val rowHeights = mutableListOf<Int>()
-
-        var currentRow = mutableListOf<Placeable>()
-        var currentWidth = 0
-        var currentHeight = 0
-
-        fun commitRow() {
-            if (currentRow.isNotEmpty()) {
-                rows += currentRow.toList()
-                rowHeights += currentHeight
-                currentRow.clear()
-                currentWidth = 0
-                currentHeight = 0
-            }
-        }
-
-        placeables.forEach { p ->
-            val nextWidth = if (currentRow.isEmpty()) p.width else currentWidth + hGap + p.width
-            if (nextWidth <= maxWidth) {
-                currentRow += p
-                currentWidth = nextWidth
-                currentHeight = maxOf(currentHeight, p.height)
-            } else {
-                commitRow()
-                currentRow += p
-                currentWidth = p.width
-                currentHeight = p.height
-            }
-        }
-        commitRow()
-
-        val layoutHeight = if (rows.isEmpty()) 0 else rowHeights.sum() + vGap * (rows.size - 1)
-
-        layout(width = maxWidth, height = layoutHeight) {
-            var y = 0
-            rows.forEachIndexed { i, row ->
-                var x = 0
-                row.forEach { pl ->
-                    pl.placeRelative(x, y)
-                    x += pl.width + hGap
-                }
-                y += rowHeights[i] + vGap
-            }
-        }
+        Text(
+            "X",
+            color = Color(0xFF14B800),
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.clickable { onRemove() }
+        )
     }
 }
 
 /* ======================== HELPERS ======================== */
 
 private fun teeLabel(c: TeeColour): String =
-    c.name.lowercase().replace('_', ' ').split(' ').joinToString(" ") { it.replaceFirstChar(Char::titlecase) }
+    c.name.lowercase().replace('_', ' ').split(' ')
+        .joinToString(" ") { it.replaceFirstChar(Char::titlecase) }
 
 @Composable
 private fun teeColourToColor(c: TeeColour): Color = when (c) {
-    TeeColour.WHITE        -> Color(0xFFFFFFFF)
-    TeeColour.BLACK        -> Color(0xFF111111)
-    TeeColour.SILVER       -> Color(0xFFC0C0C0)
-    TeeColour.RED          -> Color(0xFFE53935)
-    TeeColour.BURGUNDY     -> Color(0xFF800020)
-    TeeColour.YELLOW       -> Color(0xFFFDD835)
-    TeeColour.ORANGE       -> Color(0xFFFB8C00)
-    TeeColour.LIGHT_GREEN  -> Color(0xFF8BC34A)
-    TeeColour.DARK_GREEN   -> Color(0xFF2E7D32)
-    TeeColour.PURPLE       -> Color(0xFF6A1B9A)
-    TeeColour.COPPER       -> Color(0xFFB87333)
-    TeeColour.GOLD         -> Color(0xFFFFD700)
-    TeeColour.REFLEX_BLUE  -> Color(0xFF001489)
-    TeeColour.DARK_BLUE    -> Color(0xFF0D47A1)
+    TeeColour.WHITE -> Color(0xFFFFFFFF)
+    TeeColour.BLACK -> Color(0xFF111111)
+    TeeColour.SILVER -> Color(0xFFC0C0C0)
+    TeeColour.RED -> Color(0xFFE53935)
+    TeeColour.BURGUNDY -> Color(0xFF800020)
+    TeeColour.YELLOW -> Color(0xFFFDD835)
+    TeeColour.ORANGE -> Color(0xFFFB8C00)
+    TeeColour.LIGHT_GREEN -> Color(0xFF8BC34A)
+    TeeColour.DARK_GREEN -> Color(0xFF2E7D32)
+    TeeColour.PURPLE -> Color(0xFF6A1B9A)
+    TeeColour.COPPER -> Color(0xFFB87333)
+    TeeColour.GOLD -> Color(0xFFFFD700)
+    TeeColour.REFLEX_BLUE -> Color(0xFF001489)
+    TeeColour.DARK_BLUE -> Color(0xFF0D47A1)
 }
