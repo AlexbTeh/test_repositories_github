@@ -1,16 +1,18 @@
 package com.done.domain.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
 enum class TeeColour { WHITE, BLACK, SILVER, RED, BURGUNDY, YELLOW, ORANGE, LIGHT_GREEN, DARK_GREEN, PURPLE, COPPER, GOLD, REFLEX_BLUE, DARK_BLUE }
 enum class RoundType { STROKE, STABLEFORD }
-
+@Parcelize
 data class Player(
     val id: String = UUID.randomUUID().toString(),
     val name: String
-)
+) : Parcelable
 
 data class RoundMeta(
     val id: String = UUID.randomUUID().toString(),

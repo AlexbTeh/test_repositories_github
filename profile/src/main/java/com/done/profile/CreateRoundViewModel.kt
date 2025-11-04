@@ -1,53 +1,67 @@
 package com.done.profile
 
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.done.common.Time
-import com.done.domain.models.Player
-import com.done.domain.models.RoundMeta
-import com.done.domain.models.RoundType
-import com.done.domain.models.TeeColour
-import com.done.domain.usecase.CreateRoundUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
+import com.done.domain.models.*
+import com.done.domain.repository.RoundsRepository
+import java.util.UUID
 
-data class CreateUiState(
-    val tee: TeeColour? = TeeColour.RED,
-    val holes: Int? = 18,
-    val type: RoundType? = RoundType.STABLEFORD,
-    val players: List<Player> = emptyList()
+data class CreateRoundUi(
+    val course: String = "Cronulla Golf club",
+    val date: LocalDate = LocalDate.now(),
+    val tees: TeeColour? = null,
+    val holes: Int? = null,
+    val roundType: RoundType? = null,
+    val players: List<Player> = emptyList(),
+    val isValid: Boolean = false
 )
 
 @HiltViewModel
 class CreateRoundViewModel @Inject constructor(
-    private val createRound: CreateRoundUseCase
+    private val repo: RoundsRepository
 ) : ViewModel() {
-    private val _ui = MutableStateFlow(CreateUiState(players = listOf(Player(name = "John Smith"))))
-    val ui = _ui.asStateFlow()
 
-    fun setTee(t: TeeColour) = _ui.update { it.copy(tee = t) }
-    fun setHoles(h: Int) = _ui.update { it.copy(holes = h) }
-    fun setType(t: RoundType) = _ui.update { it.copy(type = t) }
+    private val _ui = MutableStateFlow(CreateRoundUi())
+    val ui: StateFlow<CreateRoundUi> = _ui.asStateFlow()
 
-    fun addPlayerDialog() {
-        val idx = _ui.value.players.size + 1
-        addPlayer("John Smith $idx")
+    fun setTees(v: TeeColour) = update { it.copy(tees = v) }
+    fun setHoles(v: Int) = update { it.copy(holes = v) }
+    fun setType(v: RoundType) = update { it.copy(roundType = v) }
+
+    fun addPlayer(p: Player) = update { it.copy(players = it.players + p) }
+    fun removePlayer(id: String) =
+        update { it.copy(players = it.players.filterNot { p -> p.id == id }) }
+
+    private fun update(f: (CreateRoundUi) -> CreateRoundUi) {
+        val next = f(_ui.value).let { it.copy(isValid = validate(it)) }
+        _ui.value = next
     }
-    fun addPlayer(name: String) = _ui.update { it.copy(players = it.players + Player(name = name)) }
-    fun removePlayer(id: String) = _ui.update { it.copy(players = it.players.filterNot { p -> p.id == id }) }
 
-    fun start(onStart: (String) -> Unit) = viewModelScope.launch {
+    private fun validate(u: CreateRoundUi): Boolean =
+        u.course.isNotBlank() && u.tees != null && u.holes != null && u.roundType != null && u.players.isNotEmpty()
+
+    fun createRound(onCreated: (String) -> Unit) {
         val s = _ui.value
-        val meta = RoundMeta(
-            course = "Cronulla Golf club",
-            date = Time.today(),
-            tee = s.tee!!, holes = s.holes!!, type = s.type!!
-        )
-        val sc = createRound(meta, s.players)
-        onStart(sc.round.id)
+        if (!s.isValid) return
+        viewModelScope.launch {
+            val meta = RoundMeta(
+                id = UUID.randomUUID().toString(),
+                course = s.course,
+                date = s.date,
+                startTime = LocalDateTime.now(),
+                holes = s.holes!!,
+                tee = s.tees!!,
+                type = s.roundType!!
+            )
+            val card = repo.createRound(meta, s.players)
+            onCreated(card.round.id)
+        }
     }
 }
