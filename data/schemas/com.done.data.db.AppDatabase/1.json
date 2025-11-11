@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b84f6f74b0ce70dd15c71ddafd3f0366",
+    "identityHash": "059fa5984f03293b70045a417c1dc421",
     "entities": [
       {
         "tableName": "rounds",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `course` TEXT NOT NULL, `date` TEXT NOT NULL, `tee` TEXT NOT NULL, `holes` INTEGER NOT NULL, `type` TEXT NOT NULL, `startTime` TEXT NOT NULL, `isSubmitted` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `course` TEXT NOT NULL, `date` TEXT NOT NULL, `tee` TEXT NOT NULL, `holes` INTEGER NOT NULL, `type` TEXT NOT NULL, `startTime` TEXT NOT NULL, `isSubmitted` INTEGER NOT NULL, `remoteId` INTEGER, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -55,6 +55,12 @@
             "columnName": "isSubmitted",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "remoteId",
+            "columnName": "remoteId",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -68,17 +74,17 @@
       },
       {
         "tableName": "players",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `roundId` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`roundId` TEXT NOT NULL, `id` TEXT NOT NULL, `name` TEXT NOT NULL, `memberId` TEXT, `remoteId` INTEGER, PRIMARY KEY(`roundId`, `id`))",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "id",
+            "fieldPath": "roundId",
+            "columnName": "roundId",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "roundId",
-            "columnName": "roundId",
+            "fieldPath": "id",
+            "columnName": "id",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -87,11 +93,24 @@
             "columnName": "name",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "memberId",
+            "columnName": "memberId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "remoteId",
+            "columnName": "remoteId",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
+            "roundId",
             "id"
           ]
         },
@@ -142,7 +161,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b84f6f74b0ce70dd15c71ddafd3f0366')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '059fa5984f03293b70045a417c1dc421')"
     ]
   }
 }

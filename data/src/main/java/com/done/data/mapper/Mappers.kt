@@ -13,25 +13,40 @@ import java.time.format.DateTimeFormatter
 private val D = DateTimeFormatter.ISO_LOCAL_DATE
 private val DT = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
+// data/mapper/RoomMappers.kt
+
 fun RoundMeta.toEntity() = RoundEntity(
-    id, course,
-    date.format(D),
-    tee.name, holes,
-    type.name,
-    startTime.format(DT),
-    isSubmitted
+    id = id,
+    course = course,
+    date = date,
+    tee = tee.name,
+    holes = holes,
+    type = type.name,
+    startTime = startTime,
+    isSubmitted = isSubmitted,
+    remoteId = remoteId
 )
+
 
 fun RoundEntity.toDomain() = RoundMeta(
     id = id,
     course = course,
-    date = LocalDate.parse(date, D),
+    date = date,
     tee = TeeColour.valueOf(tee),
     holes = holes,
     type = RoundType.valueOf(type),
-    startTime = LocalDateTime.parse(startTime, DT),
-    isSubmitted = isSubmitted
+    startTime = startTime,
+    isSubmitted = isSubmitted,
+    remoteId = remoteId
 )
 
-fun Player.toEntity(roundId: String) = PlayerEntity(id, roundId, name)
-fun PlayerEntity.toDomain() = Player(id = id, name = name)
+
+fun Player.toEntity(roundId: String) = PlayerEntity(roundId = roundId, id = id, name, memberId)
+// data/mapper/RoomMappers.kt
+fun PlayerEntity.toDomain() = Player(
+    id = id,
+    name = name,
+    memberId = memberId,
+    remoteId = remoteId
+)
+

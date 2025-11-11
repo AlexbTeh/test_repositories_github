@@ -78,8 +78,6 @@ private const val HEADER_H = 48
 private const val ROW_H    = 44
 private const val CELL_W   = 64
 
-/* ===================== ЭКРАН ===================== */
-
 @Composable
 private fun ScoreboardScreen(
     card: Scorecard,
@@ -90,7 +88,6 @@ private fun ScoreboardScreen(
     val scroll = rememberScrollState()
     var editing by remember { mutableStateOf<Triple<String, Int, Int?>?>(null) } // (playerId, hole, current)
 
-    // Ширина колонки имени — под самый длинный, с ограничениями
     val textMeasurer = rememberTextMeasurer()
     val density = LocalDensity.current
     val nameColWidth: Dp = remember(card.players) {

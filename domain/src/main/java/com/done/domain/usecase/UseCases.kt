@@ -7,22 +7,53 @@ import com.done.domain.repository.RoundsRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class CreateRoundUseCase @Inject constructor(private val repo: RoundsRepository) {
-    suspend operator fun invoke(meta: RoundMeta, players: List<Player>) = repo.createRound(meta, players)
+
+class CreateRoundAndSyncUseCase @Inject constructor(
+    private val repo: RoundsRepository
+) {
+    suspend operator fun invoke(meta: RoundMeta, players: List<Player>): Scorecard {
+        val local = repo.createRoundLocal(meta, players)
+        return try {
+            repo.createRoundRemote(local.round.id)
+        } catch (_: Throwable) {
+            local
+        }
+    }
 }
-class ObserveScorecardUseCase @Inject constructor(private val repo: RoundsRepository) {
+class ObserveScorecardUseCase @Inject constructor(
+    private val repo: RoundsRepository
+) {
     operator fun invoke(roundId: String): Flow<Scorecard> = repo.observeScorecard(roundId)
 }
-class SetStrokeUseCase @Inject constructor(private val repo: RoundsRepository) {
+class SetStrokeUseCase @Inject constructor(
+    private val repo: RoundsRepository
+) {
     suspend operator fun invoke(roundId: String, playerId: String, hole: Int, strokes: Int?) =
         repo.setStroke(roundId, playerId, hole, strokes)
 }
-class AddPlayerUseCase @Inject constructor(private val repo: RoundsRepository) {
-    suspend operator fun invoke(roundId: String, player: Player) = repo.addPlayer(roundId, player)
+class AddPlayerLocalUseCase @Inject constructor(
+    private val repo: RoundsRepository
+) {
+    suspend operator fun invoke(roundId: String, player: Player) =
+        repo.addPlayerLocal(roundId, player)
 }
-class RemovePlayerUseCase @Inject constructor(private val repo: RoundsRepository) {
-    suspend operator fun invoke(roundId: String, playerId: String) = repo.removePlayer(roundId, playerId)
+class RemovePlayerLocalUseCase @Inject constructor(
+    private val repo: RoundsRepository
+) {
+    suspend operator fun invoke(roundId: String, playerId: String) =
+        repo.removePlayerLocal(roundId, playerId)
 }
-class SubmitOfflineUseCase @Inject constructor(private val repo: RoundsRepository) {
-    suspend operator fun invoke(roundId: String) = repo.submitOffline(roundId)
+class SubmitRoundUseCase @Inject constructor(
+    private val repo: RoundsRepository
+) {
+    suspend operator fun invoke(roundId: String): Boolean {
+        return try {
+            val ok = repo.postScoresRemote(roundId)
+            if (!ok) repo.markSubmittedLocal(roundId)
+            ok
+        } catch (_: Throwable) {
+            repo.markSubmittedLocal(roundId)
+            false
+        }
+    }
 }

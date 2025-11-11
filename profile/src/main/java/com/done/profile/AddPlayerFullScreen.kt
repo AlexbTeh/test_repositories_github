@@ -25,8 +25,13 @@ fun AddPlayerFullScreen(
     var name by remember { mutableStateOf("") }
     var memberId by remember { mutableStateOf("") }
 
-    Box(Modifier.fillMaxSize().background(Color.Black)) {
-        Text("X",
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+    ) {
+        Text(
+            "X",
             color = Color.White,
             fontWeight = FontWeight.ExtraBold,
             modifier = Modifier
@@ -98,7 +103,13 @@ fun AddPlayerFullScreen(
                 Button(
                     onClick = {
                         if (name.isNotBlank()) {
-                            onAdded(Player(id = UUID.randomUUID().toString(), name = name.trim()))
+                            onAdded(
+                                Player(
+                                    id = UUID.randomUUID().toString(),
+                                    name = name.trim(),
+                                    memberId = memberId
+                                )
+                            )
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Palette.Green),
