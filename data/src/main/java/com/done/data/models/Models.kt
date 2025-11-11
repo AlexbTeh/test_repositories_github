@@ -39,3 +39,19 @@ data class ScoreRequest(val playerId: Int, val hole: Int, val strokes: Int)
 data class PostScoresRequest(val scores: List<ScoreRequest>)
 data class SimpleResponse(val success: Boolean)
 
+
+data class SubmitHole(
+    val hole: Int,
+    val par: Int,
+    val score: Int
+)
+
+data class SubmitPlayer(
+    val playerId: Int,
+    val holes: List<SubmitHole>
+)
+
+data class SubmitRequest(
+    val scores: List<SubmitPlayer>
+)
+

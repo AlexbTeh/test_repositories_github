@@ -24,5 +24,8 @@ interface RoundDao {
 
     // Submit flag
     @Query("UPDATE rounds SET isSubmitted=1 WHERE id=:roundId") suspend fun markSubmitted(roundId: String)
+
+    @Query("SELECT remoteId FROM rounds WHERE id = :roundId LIMIT 1")
+    suspend fun getRoundRemoteId(roundId: String): Int?
 }
 

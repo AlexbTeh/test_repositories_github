@@ -41,7 +41,8 @@ fun RoundEntity.toDomain() = RoundMeta(
 )
 
 
-fun Player.toEntity(roundId: String) = PlayerEntity(roundId = roundId, id = id, name, memberId)
+fun Player.toEntity(roundId: String) = PlayerEntity(roundId = roundId, id = id, name = name, memberId = memberId,
+    remoteId = remoteId)
 // data/mapper/RoomMappers.kt
 fun PlayerEntity.toDomain() = Player(
     id = id,
