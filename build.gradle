@@ -78,10 +78,6 @@ ext {
     coil = "io.coil-kt:coil-compose:2.6.0"
     timber = "com.jakewharton.timber:timber:5.0.1"
     picasso = "com.squareup.picasso:picasso:2.8"
-    xmltojson = "com.github.smart-fun:XmlToJson:1.5.1"
-    toasty = "com.github.GrenderG:Toasty:1.5.2"
-    mpandroidchart = "com.github.PhilJay:MPAndroidChart:v3.1.0"
-    acra_core = "ch.acra:acra-core:5.11.3"
 
     // Test
     junit_lib = "junit:junit:4.13.2"

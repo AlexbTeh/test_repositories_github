@@ -113,11 +113,7 @@ android {
 ksp { arg("room.schemaLocation", "$projectDir/schemas") }
 
 dependencies {
-
-    // ✅ Локальные AAR (работает только если flatDir добавлен в settings.gradle)
-    implementation(name: "batterymeter-2.0.0", ext: "aar")
-    implementation(name: "ultimatebar3-3.1.1", ext: "aar")
-    implementation(name: "libsuperuser-1.0.0.201811281328", ext: "aar")
+    implementation(project(":auth"))
 
     // AndroidX
     implementation rootProject.ext.androidx_core_ktx
@@ -189,10 +185,6 @@ dependencies {
     implementation rootProject.ext.coil
     implementation rootProject.ext.timber
     implementation rootProject.ext.picasso
-    implementation rootProject.ext.xmltojson
-    implementation rootProject.ext.toasty
-    implementation rootProject.ext.mpandroidchart
-    implementation rootProject.ext.acra_core
 
     // Tests
     testImplementation rootProject.ext.junit_lib

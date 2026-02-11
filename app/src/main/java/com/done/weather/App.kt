@@ -1,6 +1,7 @@
 package com.done.weather
 
 import android.app.Application
+import com.done.weather.di.authModule
 import com.done.weather.di.coreModule
 import com.done.weather.di.datastoreModule
 import com.done.weather.di.deviceModule

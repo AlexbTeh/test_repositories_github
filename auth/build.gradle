@@ -1,0 +1,77 @@
+import java.util.Properties
+
+plugins {
+    id "com.android.library"
+    id "org.jetbrains.kotlin.android"
+    id "org.jetbrains.kotlin.plugin.serialization"
+}
+
+def loadProps(String fileName) {
+    def props = new Properties()
+    def f = rootProject.file(fileName)
+    if (f.exists()) {
+        f.withInputStream { props.load(it) }
+    }
+    return props
+}
+
+def authProps = loadProps("auth.properties")
+
+def secretKey = authProps.getProperty("secretKey", "")
+def secretPhrase = authProps.getProperty("secretPhrase", "")
+
+android {
+    namespace 'com.done.weather'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 21
+
+        buildConfigField "String", "SECRET_KEY", "\"${secretKey}\""
+        buildConfigField "String", "SECRET_PHRASE", "\"${secretPhrase}\""
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+}
+
+dependencies {
+    // аналоги libs.xxx → обычные координаты
+    implementation "androidx.core:core-ktx:1.16.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-datetime:0.5.0"
+    implementation "androidx.datastore:datastore-preferences:1.1.1"
+
+    // Koin (через BOM как у тебя)
+    implementation platform("io.insert-koin:koin-bom:3.5.6")
+    implementation "io.insert-koin:koin-android:3.5.6"
+    implementation "io.insert-koin:koin-androidx-compose:3.5.6"
+
+    implementation "com.jakewharton.timber:timber:5.0.1"
+
+    androidTestImplementation "junit:junit:4.13.2"
+    androidTestImplementation "androidx.test.ext:junit:1.2.1"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.6.1"
+}

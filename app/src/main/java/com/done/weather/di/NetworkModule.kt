@@ -4,11 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import com.done.weather.BuildConfig
+import com.done.weather.api.AuthApi
 import com.done.weather.data.api.CamifeyeRoundsApi
 import com.done.weather.data.api.CamifeyeSettingsApi
 import com.done.weather.data.api.AuthApiImpl
 import com.done.weather.domain.WifiInfo
 import com.done.weather.domain.repository.BaseSettingsRepository
+import com.done.weather.repository.AuthRepository
 import info.verifeye.vgps.data.api.CamifeyeHoleApi
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
@@ -201,6 +203,6 @@ val jsonDeserializer by lazy {
     Json {
         encodeDefaults = true
         ignoreUnknownKeys = true
-       // decodeEnumsCaseInsensitive = true
+        decodeEnumsCaseInsensitive = true
     }
 }
