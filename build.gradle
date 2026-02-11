@@ -1,10 +1,16 @@
 plugins {
     id "com.android.application" version "8.4.2" apply false
     id "com.android.library" version "8.4.2" apply false
+
     id "org.jetbrains.kotlin.android" version "2.0.21" apply false
     id "org.jetbrains.kotlin.plugin.serialization" version "2.0.21" apply false
+
+    // ✅ Compose compiler for Kotlin 2.0.x
+    id "org.jetbrains.kotlin.plugin.compose" version "2.0.21" apply false
+
     id "com.google.devtools.ksp" version "2.0.21-1.0.26" apply false
 }
+
 
 ext {
     // SDK
@@ -12,9 +18,6 @@ ext {
     android_min_sdk_version = 29
     android_target_sdk_version = 34
     jvm_extension = "17"
-
-    // Kotlin/Compose compiler
-    kotlin_compiler_extension = "1.5.15"
 
     // Coroutines
     coroutines_version = "1.8.1"
@@ -26,27 +29,25 @@ ext {
     room_ktx      = "androidx.room:room-ktx:${room_version}"
     room_compiler = "androidx.room:room-compiler:${room_version}"
 
-    // AndroidX базовые
+    // ✅ AndroidX (держим совместимо с compileSdk 34 / AGP 8.4.2)
+    // ВАЖНО: НЕ 1.16.0!
     androidx_core_ktx   = "androidx.core:core-ktx:1.13.1"
+    androidx_core       = "androidx.core:core:1.13.1"
+
+
     androidx_appcompat  = "androidx.appcompat:appcompat:1.7.0"
     androidx_fragment   = "androidx.fragment:fragment-ktx:1.8.2"
     androidx_browser    = "androidx.browser:browser:1.8.0"
     androidx_datastore  = "androidx.datastore:datastore-preferences:1.1.1"
     androidx_lifecycle_service = "androidx.lifecycle:lifecycle-service:2.8.4"
+    lifecycle_runtime_compose = "androidx.lifecycle:lifecycle-runtime-compose:2.8.7"
 
     // Material / Flexbox / Location
     android_material = "com.google.android.material:material:1.12.0"
     google_flexbox = "com.google.android.flexbox:flexbox:3.0.0"
     play_services_location = "com.google.android.gms:play-services-location:21.3.0"
 
-    // Retrofit/OkHttp (если надо data/repositories)
-    retrofit_version = "2.11.0"
-    okhttp_version = "4.12.0"
-    retrofit_lib = "com.squareup.retrofit2:retrofit:${retrofit_version}"
-    retrofit_converter_gson = "com.squareup.retrofit2:converter-gson:${retrofit_version}"
-    retrofit_logging_interceptor = "com.squareup.okhttp3:logging-interceptor:${okhttp_version}"
-
-    // Compose через BOM (РЕКОМЕНДУЮ)
+    // Compose BOM (оставляем)
     compose_bom = "androidx.compose:compose-bom:2024.06.00"
     compose_ui = "androidx.compose.ui:ui"
     compose_tooling_preview = "androidx.compose.ui:ui-tooling-preview"
@@ -55,12 +56,6 @@ ext {
     compose_material3 = "androidx.compose.material3:material3"
     compose_navigation = "androidx.navigation:navigation-compose:2.7.7"
     compose_constraintlayout = "androidx.constraintlayout:constraintlayout-compose:1.0.1"
-    lifecycle_runtime_compose = "androidx.lifecycle:lifecycle-runtime-compose:2.8.7"
-
-    // ❗ для твоих feature-модулей, где ты писал compose_ui_version
-    // просто даём переменную, чтобы старые строки не падали
-    compose_ui_version = "1.6.8"
-    material3 = "androidx.compose.material3:material3" // если где-то rootProject.ext.material3 используется
 
     // Koin
     koin_bom = "3.5.6"
@@ -78,6 +73,17 @@ ext {
     coil = "io.coil-kt:coil-compose:2.6.0"
     timber = "com.jakewharton.timber:timber:5.0.1"
     picasso = "com.squareup.picasso:picasso:2.8"
+
+    // ✅ Ktor + datetime (в одном месте)
+    ktor_version = "2.3.12"
+    ktor_client_core = "io.ktor:ktor-client-core:${ktor_version}"
+    ktor_client_okhttp = "io.ktor:ktor-client-okhttp:${ktor_version}"
+    ktor_client_content_negotiation = "io.ktor:ktor-client-content-negotiation:${ktor_version}"
+    ktor_serialization_json = "io.ktor:ktor-serialization-kotlinx-json:${ktor_version}"
+    ktor_client_logging = "io.ktor:ktor-client-logging:${ktor_version}"
+    ktor_client_auth = "io.ktor:ktor-client-auth:${ktor_version}"
+
+    kotlinx_datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.5.0"
 
     // Test
     junit_lib = "junit:junit:4.13.2"

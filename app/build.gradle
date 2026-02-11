@@ -3,9 +3,10 @@ import java.util.Properties
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.serialization'
+    id 'org.jetbrains.kotlin.plugin.compose'     // ✅ ВАЖНО для Kotlin 2.0.x + Compose
     id 'com.google.devtools.ksp'
     id 'kotlin-parcelize'
-    id 'org.jetbrains.kotlin.plugin.serialization'
 }
 
 def loadProps(String fileName) {
@@ -82,6 +83,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+
     kotlinOptions { jvmTarget = rootProject.ext.jvm_extension }
 
     buildFeatures {
@@ -89,9 +91,9 @@ android {
         viewBinding true
         compose true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = rootProject.ext.kotlin_compiler_extension
-    }
+
+    // ❌ НЕ НУЖНО при Kotlin 2.0.x + plugin.compose
+    // composeOptions { kotlinCompilerExtensionVersion = ... }
 
     packaging {
         resources { excludes += ["/META-INF/{AL2.0,LGPL2.1}"] }
@@ -116,6 +118,7 @@ dependencies {
     implementation(project(":auth"))
 
     // AndroidX
+    implementation rootProject.ext.androidx_core
     implementation rootProject.ext.androidx_core_ktx
     implementation rootProject.ext.androidx_appcompat
     implementation rootProject.ext.androidx_fragment
@@ -125,6 +128,7 @@ dependencies {
     implementation rootProject.ext.androidx_browser
     implementation rootProject.ext.androidx_datastore
     implementation rootProject.ext.androidx_lifecycle_service
+    implementation rootProject.ext.lifecycle_runtime_compose
 
     // Coroutines
     implementation rootProject.ext.kotlinx_coroutines_android
@@ -139,7 +143,7 @@ dependencies {
     implementation "io.insert-koin:koin-android"
     implementation "io.insert-koin:koin-androidx-compose"
 
-    // Compose (через BOM)
+    // Compose (BOM)
     implementation platform(rootProject.ext.compose_bom)
     androidTestImplementation platform(rootProject.ext.compose_bom)
     implementation rootProject.ext.compose_ui
@@ -149,35 +153,23 @@ dependencies {
     debugImplementation rootProject.ext.compose_test_manifest
     implementation rootProject.ext.compose_navigation
     implementation rootProject.ext.compose_constraintlayout
-    implementation rootProject.ext.lifecycle_runtime_compose
 
-    // ✅ Ktor (чтобы твой HttpClient компилился)
+    // ✅ Ktor (чтобы импорты Auth/Logging/ContentNegotiation работали)
+    implementation rootProject.ext.ktor_client_core
+    implementation rootProject.ext.ktor_client_okhttp
+    implementation rootProject.ext.ktor_client_content_negotiation
+    implementation rootProject.ext.ktor_serialization_json
+    implementation rootProject.ext.ktor_client_logging
+    implementation rootProject.ext.ktor_client_auth
 
-    // Ktor client core
-    implementation "io.ktor:ktor-client-core:2.3.12"
+    // ✅ kotlinx-datetime (Instant / Clock / LocalDate / todayIn)
+    implementation rootProject.ext.kotlinx_datetime
 
-    // Engine (Android)
-    implementation "io.ktor:ktor-client-okhttp:2.3.12"
-
-    // ContentNegotiation + serialization
-    implementation "io.ktor:ktor-client-content-negotiation:2.3.12"
-    implementation "io.ktor:ktor-serialization-kotlinx-json:2.3.12"
-
-    // Logging
-    implementation "io.ktor:ktor-client-logging:2.3.12"
-
-    // Auth (Bearer)
-    implementation "io.ktor:ktor-client-auth:2.3.12"
-
-    implementation "org.jetbrains.kotlinx:kotlinx-datetime:0.5.0"
-
-
-    // CameraX
+    // CameraX / MediaPipe
     implementation rootProject.ext.camerax_core
     implementation rootProject.ext.camerax_camera2
     implementation rootProject.ext.camerax_lifecycle
     implementation rootProject.ext.camerax_view
-
     implementation rootProject.ext.mediapipe_tasks_vision
 
     // Utils
