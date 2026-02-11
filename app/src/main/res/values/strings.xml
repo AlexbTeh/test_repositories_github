@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">weather</string>
+    <string name="app_name">Camifeye</string>
+    <string name="pref_key_sleep_countdown">sleep_countdown</string>
 </resources>

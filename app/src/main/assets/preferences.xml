@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<setting>
+
+    <!-- #################################### -->
+    <!--  Password                            -->
+    <!-- #################################### -->
+
+    <setting_password>9799</setting_password>
+    <setting_advanced_password>8099</setting_advanced_password>
+
+    <!-- #################################### -->
+    <!--  Visibility Options                  -->
+    <!-- #################################### -->
+
+    <!-- fontsize : small, medium, normal, large, maximum -->
+    <fontsize>normal</fontsize>
+    <!-- change screen orientation between landscape and reverse landscape -->
+    <reverse_landscape>false</reverse_landscape>
+
+    <!-- enable/disable low power mode -->
+    <low_power_mode>true</low_power_mode>
+
+    <!-- time before automatic shutdown when discharging, 0 equal disabled   -->
+    <auto_shutdown_time>0</auto_shutdown_time>
+
+    <!-- Show time in military format -->
+    <military_time>false</military_time>
+    <!-- unit for distance: m(meter)/y(yard) -->
+    <distance_unit>m</distance_unit>
+    <!-- Enable hole timer -->
+    <enable_hole_timer>true</enable_hole_timer>
+    <!-- enable/disable switching units -->
+    <switch_unit>true</switch_unit>
+    <!-- DPI for device, should be greater than 100, otherwise it will not change the device -->
+    <dpi>0</dpi>
+
+    <!-- Switch quick start mode -->
+    <quick_start>false</quick_start>
+    <!-- Whether scorecard enabled -->
+    <scorecard>false</scorecard>
+    <!-- Reverse only mode in the green GeoFenced areas -->
+    <bluetooth_reverse_only>true</bluetooth_reverse_only>
+    <!-- Switch pop notification -->
+    <pop_notification>false</pop_notification>
+    <!-- Whether to show connection icons such as Bluetooth connection, GPS status, network connection -->
+    <show_connection_icons>true</show_connection_icons>
+    <!-- Toggle popup messages -->
+    <!-- DEPRECATED ! now show only messages that really need -->
+    <toggle_messages>true</toggle_messages>
+    <!-- Prevents user from typing messages to the clubhouse -->
+    <messages_templates_only>false</messages_templates_only>
+    <!-- DEPRECATED ! Visibility of Satellite signal strength -->
+    <satellite_signal_strength>true</satellite_signal_strength>
+    <!-- Visibility of Goto Hole button in welcome screen -->
+    <goto_hole_in_welcome>true</goto_hole_in_welcome>
+    <!-- Visibility of FRONT/BACK distance -->
+    <front_dist>true</front_dist>
+    <back_dist>true</back_dist>
+
+    <!-- Visibility of Facilities -->
+    <hazard>true</hazard>
+    <hazard_name>false</hazard_name>
+    <link_hazard>false</link_hazard>
+    <trigger>false</trigger>
+    <homebase>false</homebase>
+    <green_front>false</green_front>
+    <green_back>false</green_back>
+
+    <!-- Visibility of Zones -->
+    <hazard_zone>false</hazard_zone>
+    <trigger_zone>false</trigger_zone>
+    <homebase_zone>false</homebase_zone>
+    <geofence>false</geofence>
+
+    <!-- #################################### -->
+    <!--  Demo                                -->
+    <!-- #################################### -->
+
+    <!-- Enable/disable demo mode -->
+    <demo_enable>false</demo_enable>
+    <!-- Show/hide path of demo mode -->
+    <demo_path>false</demo_path>
+    <!-- Cart's speed in demo mode, km/h, integer -->
+    <demo_speed>8</demo_speed>
+
+    <!-- #################################### -->
+    <!--  Camera setting                      -->
+    <!-- #################################### -->
+
+    <!-- Enable/disable taking picture on first hole -->
+    <enable_picture_first_hole>false</enable_picture_first_hole>
+    <!-- Enable/disable taking picture on trigger which has 'picture=yes' attribute -->
+    <enable_picture_trigger>false</enable_picture_trigger>
+    <!-- Enable/disable recording video in geofence area -->
+    <enable_video>false</enable_video>
+
+    <!-- #################################### -->
+    <!--  Schedule On/Off                     -->
+    <!-- #################################### -->
+
+    <schedule_on>false</schedule_on>
+    <schedule_on_time>08:00</schedule_on_time>
+    <schedule_off>false</schedule_off>
+    <schedule_off_time>17:30</schedule_off_time>
+
+    <!-- #################################### -->
+    <!--  GPS location tracking setting       -->
+    <!-- #################################### -->
+
+    <!-- minimum precision needed for location change -->
+    <accuracy>10</accuracy>
+    <!-- minimum distance change for location update in meters -->
+    <min_gps_distance>1</min_gps_distance>
+    <!-- maximum GPS position speed for spike filtering -->
+    <max_gps_speed>30</max_gps_speed>
+    <!-- homebase idle time before round reset -->
+    <homebase_reset_round_time>10</homebase_reset_round_time>
+    <!-- period of update location in seconds -->
+    <location_update_freq>2</location_update_freq>
+    <!-- timing of gps reset in home base, seconds -->
+    <!-- DEPRECATED ! This preference is legacy and now not used -->
+    <gps_reset_in_homebase>600</gps_reset_in_homebase>
+
+    <!-- #################################### -->
+    <!--  Sleep mode					      -->
+    <!-- #################################### -->
+    <sleep_count_down>600</sleep_count_down>
+
+    <!-- ############################################################ -->
+    <!--  Device status, Log position & Upload position data          -->
+    <!-- ############################################################ -->
+
+    <!-- Frequency of device status, minutes -->
+    <device_status_freq>120</device_status_freq>
+    <!-- DEPRECATED ! Frequency of logging data to local storage, seconds -->
+    <log_data_freq>10</log_data_freq>
+    <!-- DEPRECATED ! use SIM network or not -->
+    <use_sim>true</use_sim>
+    <!-- Frequency of uploading data to server when SIM network enabled, seconds -->
+    <sim_upload_freq>60</sim_upload_freq>
+    <!-- Frequency of uploading data to server when WIFI network enabled, seconds -->
+    <wifi_upload_freq>60</wifi_upload_freq>
+    <!-- Minimum cart speed threshold for logging in km/h -->
+    <moving_more>6</moving_more>
+    <!-- Maximum cart speed threshold for logging in km/h -->
+    <moving_up>18</moving_up>
+    <!-- period of save location for reporting to the server in seconds -->
+    <location_reporting_period>10</location_reporting_period>
+    <!-- size of batch with location for reporting to the server -->
+    <location_reporting_batch_size>100</location_reporting_batch_size>
+
+    <!-- #################### -->
+    <!--  Course update       -->
+    <!-- #################### -->
+    <!-- Course data update interval in homebase area, minutes -->
+    <course_update_period>30</course_update_period>
+
+    <!-- #################################### -->
+    <!--  Other carts location                -->
+    <!-- #################################### -->
+    <!-- Enable/Disable to show other carts location -->
+    <other_carts>false</other_carts>
+    <!-- Frequency of getting other carts location, seconds -->
+    <other_carts_freq>60</other_carts_freq>
+
+
+    <!-- #################################### -->
+    <!--  GPS Testing setting                 -->
+    <!-- #################################### -->
+
+    <!-- run gps test at first or not -->
+    <gpstest_run>false</gpstest_run>
+    <!-- infinite test -->
+    <gpstest_infinite>true</gpstest_infinite>
+    <!-- gps test times, if inifinite is true, it will be ignored -->
+    <gpstest_times>1000</gpstest_times>
+    <!-- gps test interval time in seconds -->
+    <gpstest_interval>7200</gpstest_interval>
+    <!-- gps test type -->
+    <gpstest_restart_type>hot</gpstest_restart_type>
+    <!-- gps test needs 3D fix -->
+    <gpstest_3d_fix>false</gpstest_3d_fix>
+
+
+    <!-- #################################### -->
+    <!--  Network setting                 -->
+    <!-- #################################### -->
+
+    <!-- Reduce data usage on mobile networks -->
+    <low_mobile_data_consumption>false</low_mobile_data_consumption>
+
+    <!-- #################################### -->
+    <!--  Preferences for Marshal mode         -->
+    <!-- #################################### -->
+    <marshal_email>marshal@manlygolf.com.au</marshal_email>
+    <marshal_password>Marshall@123</marshal_password>
+    <marshal_url>https://aus.verifeye.info/reports/marshal</marshal_url>
+
+    <!-- #################################### -->
+    <!--  AFWall+ setting                     -->
+    <!-- #################################### -->
+
+    <afwall_allow_apps>
+        <item t3g="true" wifi="true" lan="false" roam="false" vpn="false" name="(gps) - GPS"/>
+        <item t3g="true" wifi="true" lan="false" roam="false" vpn="false" name="(ntp) - Internet time servers"/>
+        <item t3g="true" wifi="true" lan="false" roam="false" vpn="false" name="On-Pin vGPS"/>
+        <item t3g="true" wifi="true" lan="false" roam="false" vpn="false" name="On-Pin Superintendent"/>
+        <item t3g="true" wifi="true" lan="false" roam="false" vpn="false" name="On-Pin Mini-Stations"/>
+        <item t3g="true" wifi="true" lan="false" roam="false" vpn="false" name="Mobile Data"/>
+        <item t3g="true" wifi="true" lan="false" roam="false" vpn="false" name="Mobile Network Configuration"/>
+    </afwall_allow_apps>
+    <afwall_autorun>true</afwall_autorun>
+
+</setting>
