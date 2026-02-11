@@ -1,6 +1,6 @@
 package com.done.weather.utils
 
-import com.done.weather.BuildConfig
+import com.done.weather.auth.BuildConfig
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone

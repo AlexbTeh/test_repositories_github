@@ -1,7 +1,7 @@
 package com.done.weather.repository
 
-import com.done.weather.BuildConfig
 import com.done.weather.api.AuthApi
+import com.done.weather.auth.BuildConfig
 import com.done.weather.model.AuthParams
 import com.done.weather.utils.EncryptUtil
 import com.done.weather.utils.TokenGenerateUtil

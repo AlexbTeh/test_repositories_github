@@ -21,7 +21,8 @@ def secretKey = authProps.getProperty("secretKey", "")
 def secretPhrase = authProps.getProperty("secretPhrase", "")
 
 android {
-    namespace 'com.done.weather'
+    // ✅ ОБЯЗАТЕЛЬНО другое namespace, НЕ com.done.weather
+    namespace "com.done.weather.auth"
     compileSdk 34
 
     defaultConfig {
@@ -34,9 +35,7 @@ android {
     }
 
     buildTypes {
-        debug {
-            minifyEnabled false
-        }
+        debug { minifyEnabled false }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
@@ -48,29 +47,26 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+    kotlinOptions { jvmTarget = "17" }
 
-    buildFeatures {
-        buildConfig true
-    }
+    buildFeatures { buildConfig true }
 }
 
 dependencies {
-    implementation "androidx.core:core-ktx:1.13.1"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
-    implementation "org.jetbrains.kotlinx:kotlinx-datetime:0.5.0"
-    implementation "androidx.datastore:datastore-preferences:1.1.1"
+    // ✅ бери из rootProject.ext чтобы не получить случайно 1.15/1.16 через другие модули
+    implementation rootProject.ext.androidx_core_ktx
 
-    implementation platform("io.insert-koin:koin-bom:3.5.6")
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
+    implementation rootProject.ext.kotlinx_datetime
+    implementation rootProject.ext.androidx_datastore
+
+    implementation platform("io.insert-koin:koin-bom:${rootProject.ext.koin_bom}")
     implementation "io.insert-koin:koin-android"
     implementation "io.insert-koin:koin-androidx-compose"
 
-    implementation "com.jakewharton.timber:timber:5.0.1"
+    implementation rootProject.ext.timber
 
     androidTestImplementation "junit:junit:4.13.2"
     androidTestImplementation "androidx.test.ext:junit:1.2.1"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.6.1"
 }
-
