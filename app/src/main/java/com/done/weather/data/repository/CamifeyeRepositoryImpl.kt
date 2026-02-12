@@ -2,7 +2,7 @@ package com.done.weather.data.repository
 
 import com.done.weather.data.api.CamifeyeRoundsApi
 import com.done.weather.data.api.CamifeyeSettingsApi
-import info.verifeye.vgps.data.api.CamifeyeHoleApi
+import com.done.weather.data.api.CamifeyeHoleApi
 import com.done.weather.data.api.dto.CamifeyeHoleDto
 import com.done.weather.data.api.dto.CamifeyeRoundCreateDto
 import com.done.weather.data.api.dto.CamifeyeSettingsDto

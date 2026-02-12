@@ -1,4 +1,4 @@
-package info.verifeye.vgps.data.api
+package com.done.weather.data.api
 
 import com.done.weather.data.api.dto.ApiResponse
 import com.done.weather.data.api.dto.CamifeyeHoleDto
