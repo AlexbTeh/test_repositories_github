@@ -66,7 +66,9 @@ dependencies {
 
     implementation rootProject.ext.timber
 
-    androidTestImplementation "junit:junit:4.13.2"
-    androidTestImplementation "androidx.test.ext:junit:1.2.1"
-    androidTestImplementation "androidx.test.espresso:espresso-core:3.6.1"
+    testImplementation rootProject.ext.junit_lib
+    androidTestImplementation rootProject.ext.androidx_test_core_ktx
+    androidTestImplementation rootProject.ext.androidx_test_uiautomator
+    androidTestImplementation rootProject.ext.androidx_test_runner
+    androidTestImplementation rootProject.ext.espresso_core
 }
