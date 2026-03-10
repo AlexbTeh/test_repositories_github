@@ -109,7 +109,7 @@ fun CameraScreen(
                 Text("Camera permission required", fontSize = 18.sp, color = Color.White)
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Разрешение выдаётся на уровне Activity.",
+                    "Разрешение выдаётся на уровне Activity 4949086t4908.",
                     fontSize = 14.sp,
                     color = Color.LightGray
                 )
