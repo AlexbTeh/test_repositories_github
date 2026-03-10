@@ -6,12 +6,20 @@ pluginManagement {
     }
 }
 
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+
+        // ✅ локальные AAR из app/libs
+        flatDir {
+            dirs("app/libs")
+        }
+    }
+}
+
 rootProject.name = "weather"
+
 include ':app'
-include ':common'
-include ':domain'
-include ':data'
-include ':di'
-include ':designsystem'
-include ':repositories'
-include ':profile'
+include ':auth'

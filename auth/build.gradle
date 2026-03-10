@@ -1,0 +1,74 @@
+import java.util.Properties
+
+plugins {
+    id "com.android.library"
+    id "org.jetbrains.kotlin.android"
+    id "org.jetbrains.kotlin.plugin.serialization"
+}
+
+def loadProps(String fileName) {
+    def props = new Properties()
+    def f = rootProject.file(fileName)
+    if (f.exists()) {
+        f.withInputStream { props.load(it) }
+    }
+    return props
+}
+
+def authProps = loadProps("auth.properties")
+
+def secretKey = authProps.getProperty("secretKey", "")
+def secretPhrase = authProps.getProperty("secretPhrase", "")
+
+android {
+    // ✅ ОБЯЗАТЕЛЬНО другое namespace, НЕ com.done.weather
+    namespace "com.done.weather.auth"
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 21
+
+        buildConfigField "String", "SECRET_KEY", "\"${secretKey}\""
+        buildConfigField "String", "SECRET_PHRASE", "\"${secretPhrase}\""
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug { minifyEnabled false }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions { jvmTarget = "17" }
+
+    buildFeatures { buildConfig true }
+}
+
+dependencies {
+    // ✅ бери из rootProject.ext чтобы не получить случайно 1.15/1.16 через другие модули
+    implementation rootProject.ext.androidx_core_ktx
+
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
+    implementation rootProject.ext.kotlinx_datetime
+    implementation rootProject.ext.androidx_datastore
+
+    implementation platform("io.insert-koin:koin-bom:${rootProject.ext.koin_bom}")
+    implementation "io.insert-koin:koin-android"
+    implementation "io.insert-koin:koin-androidx-compose"
+
+    implementation rootProject.ext.timber
+
+    testImplementation rootProject.ext.junit_lib
+    androidTestImplementation rootProject.ext.androidx_test_core_ktx
+    androidTestImplementation rootProject.ext.androidx_test_uiautomator
+    androidTestImplementation rootProject.ext.androidx_test_runner
+    androidTestImplementation rootProject.ext.espresso_core
+}

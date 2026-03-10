@@ -1,0 +1,9 @@
+package com.done.weather.data.datastore.settings.entity
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class PhoneEntity(
+    val name: String,
+    val number: String
+)

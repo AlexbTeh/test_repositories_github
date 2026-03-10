@@ -1,9 +1,30 @@
+import java.util.Properties
+
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'kotlin-kapt'
-    id 'dagger.hilt.android.plugin'
+    id 'org.jetbrains.kotlin.plugin.serialization'
+    id 'org.jetbrains.kotlin.plugin.compose'     // ✅ ВАЖНО для Kotlin 2.0.x + Compose
+    id 'com.google.devtools.ksp'
+    id 'kotlin-parcelize'
 }
+
+def loadProps(String fileName) {
+    def props = new Properties()
+    def f = rootProject.file(fileName)
+    if (f.exists()) {
+        f.withInputStream { props.load(it) }
+    }
+    return props
+}
+
+def signingProps = loadProps("signing.properties")
+def versionProps = loadProps("version.properties")
+
+def major = (versionProps.getProperty("majorVersion", "1") as int)
+def minor = (versionProps.getProperty("minorVersion", "0") as int)
+def patch = (versionProps.getProperty("patchVersion", "0") as int)
+def versionSuffix = versionProps.getProperty("versionSuffix", "")
 
 android {
     namespace 'com.done.weather'
@@ -13,92 +34,154 @@ android {
         applicationId "com.done.weather"
         minSdk rootProject.ext.android_min_sdk_version
         targetSdk rootProject.ext.android_target_sdk_version
-        versionCode 1
-        versionName "1.0"
+
+        versionCode 10000 * major + 100 * minor + patch
+        versionName "${major}.${minor}.${patch}"
+        if (versionSuffix != null && !versionSuffix.trim().isEmpty()) {
+            versionNameSuffix versionSuffix
+        }
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary true }
+
+        buildConfigField("String", "BASE_URL", "\"https://ausapi.verifeye.info/\"")
+    }
+
+    signingConfigs {
+        release {
+            def keystoreFile = signingProps.getProperty("KEYSTORE_FILE", "")
+            def keystorePassword = signingProps.getProperty("KEYSTORE_PASSWORD", "")
+            def keyAliasValue = signingProps.getProperty("KEY_ALIAS", "")
+
+            if (keystoreFile != null && !keystoreFile.trim().isEmpty()) {
+                storeFile file(keystoreFile)
+                storePassword keystorePassword
+                keyAlias keyAliasValue
+                keyPassword keystorePassword
+            }
+        }
     }
 
     buildTypes {
         release {
             minifyEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
             minifyEnabled false
+            shrinkResources false
+            versionNameSuffix "-debug"
+            applicationIdSuffix ".debug"
         }
     }
+
+    lint { disable 'ExpiredTargetSdkVersion' }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = rootProject.ext.jvm_extension
+
+    kotlinOptions { jvmTarget = rootProject.ext.jvm_extension }
+
+    buildFeatures {
+        buildConfig true
+        viewBinding true
+        compose true
     }
 
-    buildFeatures { compose true }
-    composeOptions { kotlinCompilerExtensionVersion = rootProject.ext.kotlin_compiler_extension }
+    // ❌ НЕ НУЖНО при Kotlin 2.0.x + plugin.compose
+    // composeOptions { kotlinCompilerExtensionVersion = ... }
 
-    packaging { resources { excludes += ["/META-INF/{AL2.0,LGPL2.1}"] } }
-
-    kapt { correctErrorTypes true }
+    packaging {
+        resources { excludes += ["/META-INF/{AL2.0,LGPL2.1}"] }
+    }
 
     testOptions {
         unitTests.includeAndroidResources = true
         animationsDisabled = false
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "vgps_${variant.versionName}_${variant.versionCode}.apk"
+        }
+    }
 }
 
+// ✅ Room schema
+ksp { arg("room.schemaLocation", "$projectDir/schemas") }
+
 dependencies {
-    // Модули
-    implementation project(":common")
-    implementation project(":domain")
-    implementation project(":data")
-    implementation project(":di")
-    implementation project(":designsystem")
-    implementation project(":repositories")
-    implementation project(":profile")
+    implementation(project(":auth"))
 
-    // AndroidX / Kotlin
+    // AndroidX
+    implementation rootProject.ext.androidx_core
     implementation rootProject.ext.androidx_core_ktx
-    implementation rootProject.ext.androidx_annotation
     implementation rootProject.ext.androidx_appcompat
-    implementation rootProject.ext.kotlinx_coroutines_android
-    implementation rootProject.ext.androidx_lifecycle_runtime
-    implementation rootProject.ext.androidx_lifecycle_vm
-    implementation rootProject.ext.androidx_lifecycle_livedata
-    implementation rootProject.ext.androidx_lifecycle_compose
+    implementation rootProject.ext.androidx_fragment
+    implementation rootProject.ext.android_material
+    implementation rootProject.ext.google_flexbox
+    implementation rootProject.ext.play_services_location
+    implementation rootProject.ext.androidx_browser
+    implementation rootProject.ext.androidx_datastore
+    implementation rootProject.ext.androidx_lifecycle_service
+    implementation rootProject.ext.lifecycle_runtime_compose
 
-    // Compose
-    implementation rootProject.ext.compose_activity
+    // Coroutines
+    implementation rootProject.ext.kotlinx_coroutines_android
+
+    // Room
+    implementation rootProject.ext.room_runtime
+    implementation rootProject.ext.room_ktx
+    ksp rootProject.ext.room_compiler
+
+    // Koin
+    implementation platform("io.insert-koin:koin-bom:${rootProject.ext.koin_bom}")
+    implementation "io.insert-koin:koin-android"
+    implementation "io.insert-koin:koin-androidx-compose"
+
+    // Compose (BOM)
+    implementation platform(rootProject.ext.compose_bom)
+    androidTestImplementation platform(rootProject.ext.compose_bom)
+    implementation rootProject.ext.compose_ui
+    implementation rootProject.ext.compose_tooling_preview
+    implementation rootProject.ext.compose_material3
+    debugImplementation rootProject.ext.compose_tooling
+    debugImplementation rootProject.ext.compose_test_manifest
     implementation rootProject.ext.compose_navigation
-    implementation "androidx.compose.ui:ui:${rootProject.ext.compose_ui_version}"
-    implementation "androidx.compose.ui:ui-tooling-preview:${rootProject.ext.compose_ui_version}" // <— preview
-    implementation rootProject.ext.material3
     implementation rootProject.ext.compose_constraintlayout
 
-    // Debug tooling (удобные превью и инспектор)
-    debugImplementation "androidx.compose.ui:ui-tooling:${rootProject.ext.compose_ui_version}"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:${rootProject.ext.compose_ui_version}"
+    // ✅ Ktor (чтобы импорты Auth/Logging/ContentNegotiation работали)
+    implementation rootProject.ext.ktor_client_core
+    implementation rootProject.ext.ktor_client_okhttp
+    implementation rootProject.ext.ktor_client_content_negotiation
+    implementation rootProject.ext.ktor_serialization_json
+    implementation rootProject.ext.ktor_client_logging
+    implementation rootProject.ext.ktor_client_auth
 
-    // Material (platform)
-    implementation rootProject.ext.android_material
+    // ✅ kotlinx-datetime (Instant / Clock / LocalDate / todayIn)
+    implementation rootProject.ext.kotlinx_datetime
 
-    // Coil
-    implementation rootProject.ext.compose_kt_coil
-    implementation rootProject.ext.compose_kt_coil_svg
+    // CameraX / MediaPipe
+    implementation rootProject.ext.camerax_core
+    implementation rootProject.ext.camerax_camera2
+    implementation rootProject.ext.camerax_lifecycle
+    implementation rootProject.ext.camerax_view
+    implementation rootProject.ext.mediapipe_tasks_vision
 
-    // Hilt
-    implementation rootProject.ext.hilt_android
-    kapt rootProject.ext.hilt_compiler
-    implementation rootProject.ext.hilt_navigation_compose
+    // Utils
+    implementation rootProject.ext.gson
+    implementation rootProject.ext.coil
+    implementation rootProject.ext.timber
+    implementation rootProject.ext.picasso
 
-    // UI tests (если понадобятся)
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:${rootProject.ext.compose_ui_version}"
-
-    // Unit/UI tests базовые
+    // Tests
     testImplementation rootProject.ext.junit_lib
-    androidTestImplementation rootProject.ext.androidx_test_junit
-    androidTestImplementation rootProject.ext.androidx_test_espresso_core
+    androidTestImplementation rootProject.ext.androidx_test_core_ktx
+    androidTestImplementation rootProject.ext.androidx_test_uiautomator
+    androidTestImplementation rootProject.ext.androidx_test_runner
+    androidTestImplementation rootProject.ext.espresso_core
 }
